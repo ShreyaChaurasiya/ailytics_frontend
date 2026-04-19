@@ -11,6 +11,9 @@ import {
 
 import logo from "./assets/logo.png";
 
+// ✅ CHANGE HERE (IMPORTANT)
+const BASE_URL = "https://ailytics-backend.onrender.com";
+
 function App() {
 
   const [sum, setSum] = useState(0);
@@ -22,14 +25,14 @@ function App() {
 
   // 🔹 Get total sales
   useEffect(() => {
-    axios.get("http://localhost:8080/api/sum?column=SALES")
+    axios.get(`${BASE_URL}/api/sum?column=SALES`)
       .then(res => setSum(res.data))
       .catch(err => console.log(err));
   }, []);
 
   // 🔹 Get grouped data
   useEffect(() => {
-    axios.get("http://localhost:8080/api/group?groupBy=COUNTRY&value=SALES")
+    axios.get(`${BASE_URL}/api/group?groupBy=COUNTRY&value=SALES`)
       .then(res => {
         const formatted = Object.keys(res.data).map(key => ({
           name: key,
@@ -46,7 +49,7 @@ function App() {
 
     setLoading(true);
 
-    axios.get(`http://localhost:8080/api/ai/ask?query=${query}`)
+    axios.get(`${BASE_URL}/api/ai/ask?query=${encodeURIComponent(query)}`)
       .then(res => {
         const newMessages = [
           ...messages,
@@ -101,7 +104,7 @@ function App() {
           {data.map((item, index) => (
             <tr key={index}>
               <td>{item.name}</td>
-              <td>{item.value.toFixed(2)}</td>
+              <td>{Number(item.value).toFixed(2)}</td>
             </tr>
           ))}
         </tbody>
