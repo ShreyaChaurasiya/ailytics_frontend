@@ -1,17 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 import logo from "./assets/logo.png";
 
-// ✅ CHANGE HERE (IMPORTANT)
+
 const BASE_URL = "https://ailytics-backend.onrender.com";
 
 function App() {
@@ -23,27 +16,33 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Get total sales
+
   useEffect(() => {
-    axios.get(`${BASE_URL}/api/sum?column=SALES`)
-      .then(res => setSum(res.data))
+    axios.get(`${BASE_URL}/api/sum?column=sales`)
+      .then(res => {
+        console.log("SUM:", res.data); // 🔥 debug
+        setSum(res.data);
+      })
       .catch(err => console.log(err));
   }, []);
 
-  // 🔹 Get grouped data
+  
   useEffect(() => {
-    axios.get(`${BASE_URL}/api/group?groupBy=COUNTRY&value=SALES`)
+    axios.get(`${BASE_URL}/api/group?groupBy=country&value=sales`)
       .then(res => {
+        console.log("GROUP:", res.data); // 🔥 debug
+
         const formatted = Object.keys(res.data).map(key => ({
           name: key,
           value: res.data[key]
         }));
+
         setData(formatted);
       })
       .catch(err => console.log(err));
   }, []);
 
-  // 🔹 AI Ask
+  
   const askAI = () => {
     if (!query) return;
 
@@ -101,16 +100,22 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
-            <tr key={index}>
-              <td>{item.name}</td>
-              <td>{Number(item.value).toFixed(2)}</td>
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan="2">No data available</td>
             </tr>
-          ))}
+          ) : (
+            data.map((item, index) => (
+              <tr key={index}>
+                <td>{item.name}</td>
+                <td>{Number(item.value).toFixed(2)}</td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
-      {/* 🔥 AI SECTION */}
+      
       <h3>Ask AI 🤖</h3>
 
       <input
@@ -128,7 +133,7 @@ function App() {
         Ask
       </button>
 
-      {/* 🔥 CHAT BOX */}
+      
       <div style={{
         width: "400px",
         margin: "20px auto",
